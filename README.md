@@ -25,11 +25,11 @@ Benchmark::instance();
 ```
 Then you can make your checkpoint:
 ``` php
-$f3->get('benchmark')->checkpoint('myTag');
+$f3->get('benchmark')->checkPoint('myTag');
 ```
 or
 ``` php
-$f3->benchmark->checkpoint();
+$f3->benchmark->checkPoint();
 ```
 ## License
 

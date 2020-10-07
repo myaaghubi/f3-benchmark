@@ -2,7 +2,7 @@
 
 /**
  * @package F3 Benchmark
- * @version 1.1.0
+ * @version 1.2.0
  * @link http://github.com/myaghobi/F3-Benchmark Github
  * @author Mohammad Yaghobi <m.yaghobi.abc@gmail.com>
  * @copyright Copyright (c) 2020, Mohammad Yaghobi
@@ -51,7 +51,7 @@ class Benchmark extends \Prefab {
       });
     }
 
-    // you can comment below lines if you don't need to checkPoint()
+    // you can comment below line if you don't need to call checkPoint()
     $f3->set('benchmark', $this);
 
     // you can comment below line if you don't like it
@@ -60,7 +60,7 @@ class Benchmark extends \Prefab {
 
 
   /**
-   * add a new checkpoint to checkpoints array & add to ram usage array
+   * add a new checkpoint
    * 
    * @return void
    */
@@ -69,12 +69,15 @@ class Benchmark extends \Prefab {
       return;
     }
 
-    $currentTime = $this->getCurrentTime();
-    $ramUsagePeak = $this->getRamUsagePeak();
-
     if (empty($tag)) {
       $tag = 'Check Point ' . ($this->lastCheckPointNumber+1);
     }
+
+    // just trying to make tag unique, so we can use duplicate tags for our checkPoints();
+    $tag.='#'.($this->lastCheckPointNumber+1);
+
+    $currentTime = $this->getCurrentTime();
+    $ramUsagePeak = $this->getRamUsagePeak();
 
     if ($this->lastCheckPointInMS == 0) {
       $currentTime = $this->getRequestTime();
@@ -126,7 +129,7 @@ class Benchmark extends \Prefab {
 
 
   /**
-   * get elapsed times from beginning till now
+   * get elapsed times from beginning till now in milliseconds
    *
    * @return int
    */
@@ -190,15 +193,31 @@ class Benchmark extends \Prefab {
     return round(pow(1024, $base - floor($base)), 1) . ' ' . $suffixes[floor($base)];
   }
 
+    
+  /**
+   * get count of all loaded files in project 
+   *
+   * @return int
+   */
+  public function getLoadedFilesCount() {
+    return count(get_required_files());
+  }
+
+
   /**
    * generate a log of checkpoints & ram usage
    *
-   * @return void
+   * @return string
    */
-  public function getDetailsLog($lineDelimiter="<br>") {
+  public function getDetailsLog($fullExecTime=0, $lineDelimiter="<br>") {
     $str = '';
     foreach ($this->checkPoints as $key => $value) {
-      $str .= "$key => Time: <b>$value ms</b>, Memory: <b>" . $this->getFormattedBytes($this->ramUsage[$key]) . "</b>".$lineDelimiter;
+      $str .= 
+      preg_replace('/#([^,]+)$/', '', $key).
+      " => ".
+      " Time: <b>$value ms</b> (".round($value/$fullExecTime*100)."%)".
+      ", Memory: <b>" . $this->getFormattedBytes($this->ramUsage[$key]) . "</b>".
+      $lineDelimiter;
     }
     return $str;
   }
@@ -210,15 +229,17 @@ class Benchmark extends \Prefab {
    * @return void
    */
   public function showBenchmark() {
+    $fullExecTime = $this->getExecutionTime();
     print '<div class="benchmark-panel" class="benchmark-panel-main">' .
-      'Time: <b>' . $this->getExecutionTime() . ' ms</b>, ' .
+      'Time: <b>' . $fullExecTime . ' ms</b>, ' .
       'Memory: <b>' . $this->getFormattedBytes($this->ramUsagePeak) . '</b>, ' .
+      'Included: <b>' . $this->getLoadedFilesCount() . '</b>, ' .
       'Points: <b>' . $this->lastCheckPointNumber . '</b>' .
       '<a href="javascript: void" id="benchmark-toggle">&#8661;</a>'.
       '</div>';
 
     print '<div class="benchmark-panel" id="benchmark-panel-log" style="display:none">' .
-      $this->getDetailsLog();
+      $this->getDetailsLog($fullExecTime);
       '</div>';
 
     print '<script>

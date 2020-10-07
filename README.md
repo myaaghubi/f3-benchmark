@@ -10,7 +10,7 @@ Just copy `benchmark.php` into your `lib/` folder.
 
 ### Usage
 
-Benchmark just works if `DEBUG>=3`, otherwise, it will disable to get not resource usage.
+The plugin works if `DEBUG>=3`, otherwise, it goes disable with no resource usage.
 Initiate `Benchmark` after your config file:
 
 ``` php

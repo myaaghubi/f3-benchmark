@@ -6,6 +6,13 @@
 
 ### Install
 
+If you use composer, run the below code:
+
+```
+composer require myaghobi/f3-benchmark
+```
+or
+
 Just copy `benchmark.php` into your `lib/` folder.
 
 ### Usage
@@ -26,10 +33,6 @@ Benchmark::instance();
 Then you can make your checkpoint:
 ``` php
 $f3->get('benchmark')->checkPoint('myTag');
-```
-or
-``` php
-$f3->benchmark->checkPoint();
 ```
 ## License
 

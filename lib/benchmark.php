@@ -2,7 +2,7 @@
 
 /**
  * @package F3 Benchmark
- * @version 1.2.0
+ * @version 1.2.1
  * @link http://github.com/myaghobi/F3-Benchmark Github
  * @author Mohammad Yaghobi <m.yaghobi.abc@gmail.com>
  * @copyright Copyright (c) 2020, Mohammad Yaghobi
@@ -46,16 +46,13 @@ class Benchmark extends \Prefab {
       $this->checkPoint('Benchmark Init');
 
       register_shutdown_function(function () {
-        $this->enhanceExcutionTime();
+        $this->enhanceExecutionTime();
         $this->showBenchmark();
       });
     }
 
     // you can comment below line if you don't need to call checkPoint()
     $f3->set('benchmark', $this);
-
-    // you can comment below line if you don't like it
-    $f3->benchmark = $this;
   }
 
 
@@ -93,11 +90,11 @@ class Benchmark extends \Prefab {
 
     
   /**
-   * calculate excution time for each checkpoint
+   * calculate execution time for each checkpoint
    *
    * @return void
    */
-  public function enhanceExcutionTime() {
+  public function enhanceExecutionTime() {
     $prevKey ='';
     $prevTime =0;
 

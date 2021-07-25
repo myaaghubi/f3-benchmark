@@ -25,20 +25,24 @@ class Benchmark extends \Prefab {
   /**
    * Benchmark constructor
    *
+   * @param bool $registerShutdown
+   * @param bool $force
    * @return void
    */
-  function __construct() {
+  function __construct($registerShutdown=true,$force=false) {
     $this->isBenchmarkEnable = false;
 
     $f3 = \Base::instance();
-    if ($f3->get('DEBUG') >= 3) {
+    if ($f3->get('DEBUG') >= 3 || $force==true) {
       $this->isBenchmarkEnable = true;
       $this->init();
 
-      register_shutdown_function(function () {
-        $this->enhanceExecutionTime();
-        print $this->getFormattedBenchmark();
-      });
+      if ($registerShutdown) {
+          register_shutdown_function(function () {
+              $this->enhanceExecutionTime();
+              print $this->getFormattedBenchmark();
+          });
+      }
     }
 
     // you can comment below line if you don't need to call checkPoint()

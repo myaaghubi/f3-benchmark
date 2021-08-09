@@ -2,7 +2,7 @@
 
 /**
  * @package F3 Benchmark
- * @version 1.3.0
+ * @version 1.4.0
  * @link http://github.com/myaghobi/F3-Benchmark Github
  * @author Mohammad Yaghobi <m.yaghobi.abc@gmail.com>
  * @copyright Copyright (c) 2020, Mohammad Yaghobi
@@ -10,6 +10,8 @@
  */
 
 class Benchmark extends \Prefab {
+  private $blockedExtensions;
+
   private $checkPoints;
   private $ramUsageMax;
 
@@ -22,6 +24,8 @@ class Benchmark extends \Prefab {
   private $lastCheckPointInMS;
   private $lastCheckPointNumber;
 
+  private $f3;
+
   /**
    * Benchmark constructor
    *
@@ -29,20 +33,33 @@ class Benchmark extends \Prefab {
    */
   function __construct() {
     $this->isBenchmarkEnable = false;
+    $this->f3 = \Base::instance();
 
-    $f3 = \Base::instance();
-    if ($f3->get('DEBUG') >= 3) {
+    $this->blockedExtensions = $this->f3->get('benchmark.BLOCKED_EXTENSIONS')?:array('css', 'js');
+
+    if ($this->f3->get('DEBUG') >= 3) {
       $this->isBenchmarkEnable = true;
       $this->init();
 
       register_shutdown_function(function () {
-        $this->enhanceExecutionTime();
-        print $this->getFormattedBenchmark();
+        $url = $this->f3->get('PARAMS.0')?:'';
+        $path = $url?parse_url($url)['path']:'';
+        $extension = @pathinfo($path)['extension']?:'';
+
+        $utf = \UTF::instance();
+        if (
+          (!$extension || 
+            !in_array($extension, $this->blockedExtensions)) && 
+          $utf->substr_count($url, 'benchmark/panel-stat') <=0
+        ) {
+          $this->enhanceExecutionTime();
+          print $this->getFormattedBenchmark();
+        }
       });
     }
 
     // you can comment below line if you don't need to call checkPoint()
-    $f3->set('benchmark', $this);
+    $this->f3->set('benchmark', $this);
   }
 
 
@@ -57,11 +74,48 @@ class Benchmark extends \Prefab {
     $this->lastCheckPointInMS = 0;
     $this->lastCheckPointNumber = 0;
 
+    $this->f3->route('POST /benchmark/panel-stat/ [ajax]', 
+      function($f3) {
+        $panel = $f3->get('POST')['panel'];
+        $stat = $f3->get('POST')['stat']?1:0;
+        $f3->set('COOKIE.benchmark_'.$panel, $stat, 86400);
+      }
+    );
+
+    // this route will help if you have stored the UI dir in non-web-accessible path
+    // the route works if plugin works (DEBUG>=3), so there is no security or performance concern
+    $this->f3->route('GET /benchmark/theme/@type/@file',
+      function($f3, $args) {
+        $web = \Web::instance();
+        $file = $f3->UI.'benchmark/theme/'.$args['type'].'/'.$args['file'];
+        $mime = $web->mime($file);
+
+        header('Content-Type: '.$mime);
+        echo $f3->read($file);
+      }
+    );
+
     // add Start point, $this->lastCheckPointInMS == 0
+    // don't worry about the place of this check point, it will fill with $_SERVER["REQUEST_TIME_FLOAT"]
     $this->checkPoint('Start');
+
+    // check UI dir
+    $this->checkUI();
 
     // add Benchmark Init point, $this->lastCheckPointInMS > 0
     $this->checkPoint('Benchmark Init');
+  }
+
+
+  /**
+   * copy the template from ui dir into your UI dir if not exists
+   *
+   * @return void
+   */
+  function checkUI() {
+    if (!is_dir($this->f3->UI . 'benchmark')) {
+      $this->copyDir(dirname(__FILE__,1).'/ui', $this->f3->UI . '/' . 'benchmark');
+    }
   }
 
 
@@ -288,11 +342,11 @@ class Benchmark extends \Prefab {
       }
 
       $str .=
-        "<div>" .
-        $name . " => " .
-        " Time: <b>$cp->time ms</b> (" . round($cp->time / $fullExecTime * 100) . "%)" .
-        ", Memory: <b>" . $this->getFormattedBytes($cp->ram) . "</b>" .
-        '</div>';
+      "<div>" .
+      $name . " => " .
+      " Time: <b>$cp->time ms</b> (" . round($cp->time / $fullExecTime * 100) . "%)" .
+      ", Memory: <b>" . $this->getFormattedBytes($cp->ram) . "</b>" .
+      '</div>';
     }
     return $str;
   }
@@ -307,7 +361,7 @@ class Benchmark extends \Prefab {
    * @param  int $line
    * @return object
    */
-  public function makeCheckPointClass($time = 0, $ram = 0, $file, $line = 0) {
+  public function makeCheckPointClass($time = 0, $ram = 0, $file = '', $line = 0) {
     return new class ($time, $ram, $file, $line) {
       public $time;
       public $ram;
@@ -331,71 +385,55 @@ class Benchmark extends \Prefab {
    */
   public function getFormattedBenchmark() {
     $fullExecTime = $this->getExecutionTime();
-    $output = '';
 
-    $output .= '<div class="benchmark-panel">' .
-      'Time: <b>' . $fullExecTime . ' ms</b>, ' .
-      'Memory: <b>' . $this->getFormattedBytes($this->ramUsageMax) . '</b>, ' .
-      'Included: <b>' . $this->getLoadedFilesCount() . '</b>, ' .
-      'Points: <b>' . $this->lastCheckPointNumber . '</b>' .
-      '<a href="javascript: void" id="benchmark-toggle">&#8661;</a>' .
-      '</div>';
+    // prevent of "Division by zero"
+    if ($fullExecTime <= 0) {
+      $fullExecTime = 1;
+    }
 
-    $output .= '<div class="benchmark-panel benchmark-panel-log" style="display:none">' .
-      $this->getDetailsLog($fullExecTime) .
-      '</div>';
+    $this->f3->set('benchmark.output.fullExecTime',$fullExecTime);
+    $this->f3->set('benchmark.output.ramUsageMax',$this->getFormattedBytes($this->ramUsageMax));
+    $this->f3->set('benchmark.output.includedFilesCount',$this->getLoadedFilesCount());
+    $this->f3->set('benchmark.output.points',$this->lastCheckPointNumber);
+    $this->f3->set('benchmark.output.detailsLog',$this->getDetailsLog($fullExecTime));
 
-    $output .= '<script>
-        document.getElementById("benchmark-toggle").onclick = function () {
-          var x = document.getElementsByClassName("benchmark-panel-log")[0];
-          if (x.style.display == "none") {
-              x.style.display = "inline-block";
-          } else {
-              x.style.display = "none";
-          }
-          return false;
-        };
-      </script>';
+    $this->f3->set('benchmark.output.stat.params', $this->f3->get('COOKIE.benchmark_panel_params'));
+    $this->f3->set('benchmark.output.stat.post', $this->f3->get('COOKIE.benchmark_panel_post'));
+    $this->f3->set('benchmark.output.stat.points', $this->f3->get('COOKIE.benchmark_panel_points'));
+    $this->f3->set('benchmark.output.stat.session', $this->f3->get('COOKIE.benchmark_panel_session'));
+    $this->f3->set('benchmark.output.stat.cookie', $this->f3->get('COOKIE.benchmark_panel_cookie'));
+    
+    $template = \Template::instance()->render('benchmark/widget.htm');
+    return $template;
+  }
 
-    $output .= '<style>
-      .benchmark-panel {
-        position: fixed!important;
-        font-family: tahoma!important;
-        z-index: 1000000!important;
-        bottom: 5px!important;
-        left: 5px!important;
-        direction: ltr!important;
-        text-align: left!important;
-        border: 1px solid #dee2e6!important;
-        border-radius: 5px!important;
-        font-size: 13px!important;
-        background: #f8f9fa!important;
-        color: #555!important;
-        padding: 7px 10px!important;
-      }
-      .benchmark-panel-log {
-        bottom: 45px!important;
-      }
-      .benchmark-panel-log span[title] {
-        text-decoration:underline;
-        cursor: pointer
-      }
-      .benchmark a {
-        color: #555;
-        text-decoration: underline;
-      }
-      .benchmark b {
-        color: #333;
-      }
-      #benchmark-toggle {
-        display:inline-block;
-        font-size: 13px;
-        padding: 0px 3px 0 1px;
-        margin-top: -1px;
-        vertical-align: top;
-      }
-    </style>';
 
-    return $output;
+  /**
+   * copy folder
+   *
+   * @param  string $from
+   * @param  string $to
+   * @return void
+   */
+  function copyDir($from, $to) {
+    // open the source directory
+    $dir = opendir($from);
+
+    // Make the destination directory if not exist
+    @mkdir($to);
+
+    // Loop through the files in source directory
+    while ($file = readdir($dir)) {
+      if (($file != '.') && ($file != '..')) {
+        if (is_dir($from . DIRECTORY_SEPARATOR . $file)) {
+          // for sub directory 
+          $this->copyDir($from . DIRECTORY_SEPARATOR . $file, $to . DIRECTORY_SEPARATOR . $file);
+        } else {
+          copy($from . DIRECTORY_SEPARATOR . $file, $to . DIRECTORY_SEPARATOR . $file);
+        }
+      }
+    }
+
+    closedir($dir);
   }
 }

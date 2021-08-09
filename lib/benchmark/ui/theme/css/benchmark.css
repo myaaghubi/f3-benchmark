@@ -1,0 +1,55 @@
+benchmark-panel {
+  color: #555!important;
+  position: fixed!important;
+  z-index: 1000000!important;
+  bottom: 5px!important;
+  left: 5px!important;
+}
+benchmark-panel ul.bencmark-pannels {
+  margin: 0px!important;
+  padding: 0!important;
+  list-style-type: none!important;
+}
+benchmark-panel ul.bencmark-pannels li {
+  padding:5px 0 0 0;
+  line-height: 0%!important;
+}
+benchmark-panel .panel {
+  font-family: tahoma!important;
+  direction: ltr!important;
+  text-align: left!important;
+  border: 1px solid #dee2e6!important;
+  border-radius: 5px!important;
+  font-size: 13px!important;
+  background: #f8f9fa!important;
+  color: #555!important;
+  padding: 7px 10px;
+  line-height: 150%!important;
+  display: inline-block;
+}
+benchmark-panel .main-panel li span[title] {
+  text-decoration:underline;
+  cursor: pointer
+}
+benchmark-panel .main-panel {
+  padding: 0px;
+}
+benchmark-panel .main-panel ul {
+  margin: 0px!important;
+  list-style-type: none!important;
+  line-height: 0%!important;
+}
+benchmark-panel .main-panel ul li {
+  float: left;
+  padding: 7px 10px;
+  line-height: 150%!important;
+}
+benchmark-panel .main-panel ul li a {
+}
+benchmark-panel .main-panel ul li[data-target]:hover {
+  background: #efefef;
+  cursor: pointer;
+}
+benchmark-panel b {
+  color: #333;
+}

@@ -1,0 +1,75 @@
+<script>
+  var benchmarkFatFreeBase = '{{@BASE}}';
+</script>
+<link rel="stylesheet" type="text/css" href="{{@BASE}}/benchmark/theme/css/benchmark.css">
+<script src="{{@BASE}}/benchmark/theme/js/jquery.min.js"></script>
+<script src="{{@BASE}}/benchmark/theme/js/benchmark.js"></script>
+<benchmark-panel>
+  <ul class="bencmark-pannels">
+    <li class="panel-params" style="display:{{@benchmark.output.stat.params?'block':'none'}}">
+      <div class="panel">
+        Params: {{@PARAMS?'':'-'}}
+        <repeat group="{{ @PARAMS }}" key="{{@key}}" value="{{ @value }}">
+          {{ @key }}=>{{@value}}, 
+        </repeat>
+      </div>
+    </li>
+    <li class="panel-post" style="display:{{@benchmark.output.stat.post?'block':'none'}}">
+      <div class="panel">
+        Post: {{@POST?'':'-'}}
+        <repeat group="{{ @POST }}" key="{{@key}}" value="{{ @value }}">
+          {{ @key }}=>{{@value}}, 
+        </repeat>
+      </div>
+    </li>
+    <li class="panel-session" style="display:{{@benchmark.output.stat.session?'block':'none'}}">
+      <div class="panel">
+        Session: {{@SESSION?'':'-'}}
+        <repeat group="{{ @SESSION }}" key="{{@key}}" value="{{ @value }}">
+          {{ @key }}=>{{@value}}<br>
+        </repeat>
+      </div>
+    </li>
+    <li class="panel-cookie" style="display:{{@benchmark.output.stat.cookie?'block':'none'}}">
+      <div class="panel">
+        Cookie: {{@COOKIE?'':'-'}}
+        <repeat group="{{ @COOKIE }}" key="{{@key}}" value="{{ @value }}">
+          {~ if(strpos(@key, 'benchmark_panel_')===false) print @key.'=>'.@value.'<br>'; 
+          ~}
+        </repeat>
+      </div>
+    </li>
+    <li class="panel-points" style="display:{{@benchmark.output.stat.points?'block':'none'}}">
+      <div class="panel">
+        {{@benchmark.output.detailsLog|raw}}
+      </div>
+    </li>
+    <li>
+      <div class="panel main-panel">
+        <ul>
+          <li data-target="panel-points">
+              Time: <b>{{@benchmark.output.fullExecTime}}</b> &#8661;
+          </li>
+          <li>
+            Memory: <b>{{@benchmark.output.ramUsageMax}}</b>
+          </li>
+          <li>
+            Included: <b>{{@benchmark.output.includedFilesCount}}</b>
+          </li>
+          <li class="benchmark-toggle" data-target="panel-params">
+              Params: <b>{{@PARAMS?count(@PARAMS):0}}</b> &#8661;
+          </li>
+          <li class="benchmark-toggle" data-target="panel-post">
+              Post: <b>{{@POST?count(@POST):0}}</b> &#8661;
+          </li>
+          <li class="benchmark-toggle" data-target="panel-session">
+              Session: <b>{{@SESSION?count(@SESSION):0}}</b> &#8661;
+          </li>
+          <li class="benchmark-toggle" data-target="panel-cookie">
+              Cookie: <b>{{@COOKIE?count(@COOKIE):0}}</b> &#8661;
+          </li>
+        </ul>
+      </div>
+    </li>
+  </ul>
+</benchmark-panel>

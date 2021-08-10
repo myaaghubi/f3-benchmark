@@ -2,7 +2,7 @@
 
 /**
  * @package F3 Benchmark
- * @version 1.6.0
+ * @version 1.5.1
  * @link http://github.com/myaghobi/F3-Benchmark Github
  * @author Mohammad Yaghobi <m.yaghobi.abc@gmail.com>
  * @copyright Copyright (c) 2020, Mohammad Yaghobi
@@ -112,9 +112,7 @@ class Benchmark extends \Prefab {
    * @return void
    */
   function checkUI() {
-    print $this->f3->UI . 'benchmark';
     if (!is_dir($this->f3->UI . 'benchmark')) {
-    print 'xxxxxxxxx';
       $this->copyDir(dirname(__FILE__,1).'/ui', $this->f3->UI . '/' . 'benchmark');
     }
   }

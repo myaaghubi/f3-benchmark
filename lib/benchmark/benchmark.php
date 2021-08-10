@@ -2,7 +2,7 @@
 
 /**
  * @package F3 Benchmark
- * @version 1.4.0
+ * @version 1.5.0
  * @link http://github.com/myaghobi/F3-Benchmark Github
  * @author Mohammad Yaghobi <m.yaghobi.abc@gmail.com>
  * @copyright Copyright (c) 2020, Mohammad Yaghobi
@@ -46,11 +46,10 @@ class Benchmark extends \Prefab {
         $path = $url?parse_url($url)['path']:'';
         $extension = @pathinfo($path)['extension']?:'';
 
-        $utf = \UTF::instance();
         if (
           (!$extension || 
             !in_array($extension, $this->blockedExtensions)) && 
-          $utf->substr_count($url, 'benchmark/panel-stat') <=0
+          strpos($url, 'benchmark/panel-stat') === false
         ) {
           $this->enhanceExecutionTime();
           print $this->getFormattedBenchmark();
@@ -76,9 +75,9 @@ class Benchmark extends \Prefab {
 
     $this->f3->route('POST /benchmark/panel-stat/ [ajax]', 
       function($f3) {
-        $panel = $f3->get('POST')['panel'];
-        $stat = $f3->get('POST')['stat']?1:0;
-        $f3->set('COOKIE.benchmark_'.$panel, $stat, 86400);
+        $post = $f3->get('POST');
+        $f3->set('COOKIE.benchmark_panel_last', $post['panel'], 86400);
+        $f3->set('COOKIE.benchmark_panel_main', $post['main'], 86400);
       }
     );
 
@@ -397,11 +396,8 @@ class Benchmark extends \Prefab {
     $this->f3->set('benchmark.output.points',$this->lastCheckPointNumber);
     $this->f3->set('benchmark.output.detailsLog',$this->getDetailsLog($fullExecTime));
 
-    $this->f3->set('benchmark.output.stat.params', $this->f3->get('COOKIE.benchmark_panel_params'));
-    $this->f3->set('benchmark.output.stat.post', $this->f3->get('COOKIE.benchmark_panel_post'));
-    $this->f3->set('benchmark.output.stat.points', $this->f3->get('COOKIE.benchmark_panel_points'));
-    $this->f3->set('benchmark.output.stat.session', $this->f3->get('COOKIE.benchmark_panel_session'));
-    $this->f3->set('benchmark.output.stat.cookie', $this->f3->get('COOKIE.benchmark_panel_cookie'));
+    $this->f3->set('benchmark.output.panel.last', $this->f3->get('COOKIE.benchmark_panel_last'));
+    $this->f3->set('benchmark.output.panel.main', $this->f3->get('COOKIE.benchmark_panel_main'));
     
     $template = \Template::instance()->render('benchmark/widget.htm');
     return $template;

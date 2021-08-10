@@ -1,20 +1,23 @@
-benchmark-panel {
+benchmark {
   color: #555!important;
   position: fixed!important;
   z-index: 1000000!important;
   bottom: 5px!important;
   left: 5px!important;
 }
-benchmark-panel ul.bencmark-pannels {
+benchmark ul.bencmark-pannels {
   margin: 0px!important;
   padding: 0!important;
   list-style-type: none!important;
 }
-benchmark-panel ul.bencmark-pannels li {
+benchmark ul.bencmark-pannels > li {
   padding:5px 0 0 0;
   line-height: 0%!important;
 }
-benchmark-panel .panel {
+benchmark ul.bencmark-pannels > li:not(:last-child) {
+  display: none;
+}
+benchmark .panel {
   font-family: tahoma!important;
   direction: ltr!important;
   text-align: left!important;
@@ -27,29 +30,30 @@ benchmark-panel .panel {
   line-height: 150%!important;
   display: inline-block;
 }
-benchmark-panel .main-panel li span[title] {
-  text-decoration:underline;
-  cursor: pointer
+benchmark .main-panel-minimal {
+  display: block;
 }
-benchmark-panel .main-panel {
+benchmark .main-panel {
+  display: none;
+}
+benchmark .main-panel, benchmark .main-panel-minimal {
   padding: 0px;
 }
-benchmark-panel .main-panel ul {
+benchmark .main-panel ul, benchmark .main-panel-minimal ul {
   margin: 0px!important;
   list-style-type: none!important;
   line-height: 0%!important;
 }
-benchmark-panel .main-panel ul li {
+benchmark .main-panel ul li, benchmark .main-panel-minimal ul li {
   float: left;
   padding: 7px 10px;
   line-height: 150%!important;
 }
-benchmark-panel .main-panel ul li a {
-}
-benchmark-panel .main-panel ul li[data-target]:hover {
+benchmark .main-panel ul li[data-target]:hover, benchmark .main-panel-minimal ul li[data-target]:hover {
   background: #efefef;
   cursor: pointer;
+  user-select: none;
 }
-benchmark-panel b {
+benchmark b {
   color: #333;
 }

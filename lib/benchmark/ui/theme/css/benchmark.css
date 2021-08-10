@@ -30,6 +30,9 @@ benchmark .panel {
   line-height: 150%!important;
   display: inline-block;
 }
+benchmark .panel span[title] {
+  text-decoration: underline;
+}
 benchmark .main-panel-minimal {
   display: block;
 }

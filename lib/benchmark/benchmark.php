@@ -2,7 +2,7 @@
 
 /**
  * @package F3 Benchmark
- * @version 1.5.0
+ * @version 1.6.0
  * @link http://github.com/myaghobi/F3-Benchmark Github
  * @author Mohammad Yaghobi <m.yaghobi.abc@gmail.com>
  * @copyright Copyright (c) 2020, Mohammad Yaghobi
@@ -112,7 +112,9 @@ class Benchmark extends \Prefab {
    * @return void
    */
   function checkUI() {
+    print $this->f3->UI . 'benchmark';
     if (!is_dir($this->f3->UI . 'benchmark')) {
+    print 'xxxxxxxxx';
       $this->copyDir(dirname(__FILE__,1).'/ui', $this->f3->UI . '/' . 'benchmark');
     }
   }
@@ -397,7 +399,7 @@ class Benchmark extends \Prefab {
     $this->f3->set('benchmark.output.detailsLog',$this->getDetailsLog($fullExecTime));
 
     $this->f3->set('benchmark.output.panel.last', $this->f3->get('COOKIE.benchmark_panel_last'));
-    $this->f3->set('benchmark.output.panel.main', $this->f3->get('COOKIE.benchmark_panel_main'));
+    $this->f3->set('benchmark.output.panel.main', $this->f3->get('COOKIE.benchmark_panel_main')?1:0);
     
     $template = \Template::instance()->render('benchmark/widget.htm');
     return $template;

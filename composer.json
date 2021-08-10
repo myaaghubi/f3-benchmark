@@ -1,7 +1,7 @@
 {
 	"name": "myaghobi/f3-benchmark",
 	"description": "A benchmark helper plugin for Fat-Free framework.",
-	"keywords": ["F3","fatfree","benchmark","execution time","ram usage"],
+	"keywords": ["F3","fat-free-framework", "fat-free-plugin", "benchmark","debug"],
 	"homepage": "https://github.com/myaghobi/f3-benchmark",
 	"license": "GPL-3.0",
 	"autoload": {

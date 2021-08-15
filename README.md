@@ -1,18 +1,15 @@
 # F3-Benchmark
- A benchmark helper plugin for Fat-Free framework.
+ A benchmark & debug helper plugin for Fat-Free framework.
 
 ![screenshot](screenshots/shot1.jpg?raw=true "F3 Benchmark Screentshot")
 
 ### Install
 
-If you use composer, run the below code:
+Just run the below code:
 
 ```
 composer require myaghobi/f3-benchmark
 ```
-or
-
-Copy the content of lib/ folder into your lib/ folder.
 
 ### Usage
 
@@ -26,6 +23,7 @@ $f3->config('config.ini');
 ```
 or
 ``` php
+$f3->set('UI', YOUR_UI_PATH);
 $f3->set('DEBUG', YOUR_DEBUG_LEVEL);
 \Benchmark::instance();
 ```

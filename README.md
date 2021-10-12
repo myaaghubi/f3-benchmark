@@ -23,8 +23,11 @@ $f3->config('config.ini');
 ```
 or
 ``` php
+// $f3->set('UI', 'ui/');
 $f3->set('UI', YOUR_UI_PATH);
+// $f3->set('DEBUG', 3);
 $f3->set('DEBUG', YOUR_DEBUG_LEVEL);
+
 \Benchmark::instance();
 ```
 The plugin reserve `benchmark` in `f3`, after initiate, you can make your checkpoints:
@@ -32,7 +35,7 @@ The plugin reserve `benchmark` in `f3`, after initiate, you can make your checkp
 $f3->get('benchmark')->checkPoint('myTag');
 ...
 ```
-It's not necessary to remove the checkpoints of your code in production mode.
+For `DEBUG<3`, the plugin goes disable with no resource usage so it's not necessary to remove your checkpoints in production mode.
 
 ## License
 

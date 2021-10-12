@@ -29,6 +29,7 @@ benchmark .panel {
   padding: 7px 10px;
   line-height: 150%!important;
   display: inline-block;
+  overflow: hidden;
 }
 benchmark .panel span[title] {
   text-decoration: underline;
@@ -43,6 +44,7 @@ benchmark .main-panel, benchmark .main-panel-minimal {
   padding: 0px;
 }
 benchmark .main-panel ul, benchmark .main-panel-minimal ul {
+  padding: 0;
   margin: 0px!important;
   list-style-type: none!important;
   line-height: 0%!important;

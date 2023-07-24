@@ -41,4 +41,4 @@ For `DEBUG<3`, the plugin goes disable with no resource usage so it's not necess
 
 You are allowed to use this plugin under the terms of the GNU General Public License version 3 or later.
 
-Copyright (C) 2021 Mohammad Yaghobi
+Copyright (C) 2023 Mohammad Yaghobi
